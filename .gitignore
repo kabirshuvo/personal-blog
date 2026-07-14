@@ -23,3 +23,6 @@ packages/database/src/generated/
 .DS_Store
 *.log
 *.tsbuildinfo
+
+# Prisma client generated in web app
+apps/web/lib/generated/

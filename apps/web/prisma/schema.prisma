@@ -1,0 +1,425 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+enum NewsletterStatus {
+  ACTIVE
+  UNSUBSCRIBED
+  PENDING
+}
+
+enum ChartType {
+  LINE
+  BAR
+  PIE
+  AREA
+  HEATMAP
+  TIME_SERIES
+}
+
+enum ChartSource {
+  MANUAL
+  CSV
+  API
+  ANALYTICS
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String?    @map("password_hash")
+  provider     String     @default("local")
+  providerId   String?    @map("provider_id")
+  name         String
+  slug         String     @unique
+  bio          String?
+  avatarUrl    String?    @map("avatar_url")
+  status       UserStatus @default(ACTIVE)
+  roleId       String     @map("role_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  lastLoginAt  DateTime?  @map("last_login_at")
+
+  role            Role             @relation(fields: [roleId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  sessions        Session[]
+  posts           Post[]
+  comments        Comment[]
+  media           Media[]
+  bookmarks       Bookmark[]
+  readingHistory  ReadingHistory[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  analyticsEvents AnalyticsEvent[]
+
+  @@unique([provider, providerId])
+  @@index([roleId])
+  @@index([status])
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users           User[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  refreshTokenJti  String   @unique @map("refresh_token_jti")
+  userAgent        String?  @map("user_agent")
+  ipAddress        String?  @map("ip_address")
+  expiresAt        DateTime @map("expires_at")
+  revokedAt        DateTime? @map("revoked_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?  @map("actor_id")
+  action     String
+  resource   String
+  resourceId String?  @map("resource_id")
+  metadata   Json?
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([actorId])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  posts Post[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  posts PostTag[]
+
+  @@map("tags")
+}
+
+model Post {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  content         String
+  excerpt         String?
+  status          PostStatus @default(DRAFT)
+  featured        Boolean    @default(false)
+  publishedAt     DateTime?  @map("published_at")
+  scheduledAt     DateTime?  @map("scheduled_at")
+  metaTitle       String?    @map("meta_title")
+  metaDescription String?    @map("meta_description")
+  authorId        String     @map("author_id")
+  categoryId      String?    @map("category_id")
+  featuredImageId String?    @map("featured_image_id")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  author          User              @relation(fields: [authorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  category        Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  featuredImage   Media?            @relation("PostFeaturedImage", fields: [featuredImageId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  tags            PostTag[]
+  comments        Comment[]
+  bookmarks       Bookmark[]
+  readingHistory  ReadingHistory[]
+  media           Media[]           @relation("PostMedia")
+  analyticsEvents AnalyticsEvent[]
+  slugHistory     PostSlugHistory[]
+
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([featured])
+  @@map("posts")
+}
+
+model PostTag {
+  postId String @map("post_id")
+  tagId  String @map("tag_id")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+model PostSlugHistory {
+  id        String   @id @default(cuid())
+  postId    String   @map("post_id")
+  oldSlug   String   @unique @map("old_slug")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([postId])
+  @@map("post_slug_history")
+}
+
+model Comment {
+  id        String        @id @default(cuid())
+  postId    String        @map("post_id")
+  authorId  String        @map("author_id")
+  parentId  String?       @map("parent_id")
+  content   String
+  status    CommentStatus @default(PENDING)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author  User      @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parent  Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  replies Comment[] @relation("CommentThread")
+
+  @@index([postId, status])
+  @@index([authorId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String   @map("original_name")
+  mimeType     String   @map("mime_type")
+  size         Int
+  width        Int?
+  height       Int?
+  url          String
+  storageKey   String   @unique @map("storage_key")
+  altText      String?  @map("alt_text")
+  caption      String?
+  uploadedById String   @map("uploaded_by_id")
+  postId       String?  @map("post_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  uploadedBy     User   @relation(fields: [uploadedById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  post           Post?  @relation("PostMedia", fields: [postId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  featuredInPosts Post[] @relation("PostFeaturedImage")
+
+  @@index([uploadedById])
+  @@index([mimeType])
+  @@index([createdAt])
+  @@map("media")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  postId    String   @map("post_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@map("bookmarks")
+}
+
+model ReadingHistory {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  postId     String   @map("post_id")
+  progress   Float    @default(0)
+  lastReadAt DateTime @default(now()) @map("last_read_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId, lastReadAt])
+  @@map("reading_history")
+}
+
+model NewsletterSubscriber {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  status         NewsletterStatus @default(ACTIVE)
+  subscribedAt   DateTime         @default(now()) @map("subscribed_at")
+  unsubscribedAt DateTime?        @map("unsubscribed_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("newsletter_subscribers")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  eventType String   @map("event_type")
+  userId    String?  @map("user_id")
+  postId    String?  @map("post_id")
+  sessionId String?  @map("session_id")
+  path      String?
+  referrer  String?
+  userAgent String?  @map("user_agent")
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  post Post? @relation(fields: [postId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([createdAt, eventType])
+  @@index([postId, createdAt])
+  @@index([userId])
+  @@map("analytics_events")
+}
+
+model AnalyticsDailyAggregate {
+  id         String   @id @default(cuid())
+  date       DateTime @db.Date
+  metric     String
+  value      Float
+  dimensions Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([date, metric])
+  @@index([date])
+  @@index([metric])
+  @@map("analytics_daily_aggregates")
+}
+
+model ChartDataset {
+  id        String      @id @default(cuid())
+  name      String
+  type      ChartType
+  source    ChartSource @default(MANUAL)
+  config    Json?
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  dataPoints ChartDataPoint[]
+
+  @@map("chart_datasets")
+}
+
+model ChartDataPoint {
+  id        String   @id @default(cuid())
+  datasetId String   @map("dataset_id")
+  label     String
+  value     Float
+  timestamp DateTime?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  dataset ChartDataset @relation(fields: [datasetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([datasetId])
+  @@map("chart_data_points")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  type      String
+  title     String
+  content   String
+  readAt    DateTime? @map("read_at")
+  metadata  Json?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, readAt])
+  @@index([createdAt])
+  @@map("notifications")
+}
