@@ -2,10 +2,36 @@
   "name": "@blog/database",
   "version": "0.1.0",
   "private": true,
+  "main": "./src/generated/client/index.js",
+  "types": "./src/generated/client/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/generated/client/index.d.ts",
+      "require": "./src/generated/client/index.js",
+      "default": "./src/generated/client/index.js"
+    }
+  },
   "scripts": {
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
     "seed": "prisma db seed",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "postinstall": "prisma generate",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "prisma": "^6.19.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

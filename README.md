@@ -2,54 +2,107 @@
 
 A full-stack personal publishing platform with a public Next.js blog, NestJS CMS API, PostgreSQL, Redis, S3-compatible media storage, and live analytics.
 
-## Workspace layout
+## Architecture
 
 ```text
-apps/web          Next.js public site and CMS interface
-apps/api          NestJS REST API
-packages/database Prisma schema and database client (Phase 2)
-packages/shared   Shared types and constants
-packages/config   Shared tooling configuration
-docker/            Local PostgreSQL, Redis, and MinIO services
-docs/              Product, architecture, workflow, and ADR documents
+apps/web          Next.js 15 — public blog + CMS admin UI
+apps/api          NestJS REST API (/api/v1) + Swagger at /api/docs
+packages/database Prisma schema, migrations, and client
+packages/shared   Shared DTOs, types, and constants
+packages/config   Shared TypeScript base config
+docker/           Local infra (Compose) and production Dockerfiles
+docs/             Product, architecture, deployment, and workflow docs
 ```
+
+Deep-dive design: [`docs/architecture.md`](docs/architecture.md) · Decisions: [`docs/ADR.md`](docs/ADR.md) · Task workflow: [`docs/TODO.md`](docs/TODO.md)
 
 ## Prerequisites
 
 - Node.js 20 or later
 - pnpm 11
-- Docker Engine with Docker Compose v2 (or the legacy `docker-compose` command)
+- Docker Engine with Docker Compose v2 (optional; for local Postgres, Redis, MinIO)
 
 ## Local setup
 
 ```bash
 cp .env.example .env
 pnpm install
-docker compose -f docker/docker-compose.yml --env-file .env up -d
-pnpm dev
+pnpm db:generate
 ```
 
-The web application runs at `http://localhost:3000`. The API health endpoint is `http://localhost:4000/api/v1/health`.
-
-MinIO's local console is available at `http://localhost:9001`.
-
-## Common commands
+Start local infrastructure:
 
 ```bash
-pnpm dev
-pnpm build
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm format
+docker compose -f docker/docker-compose.yml --env-file .env up -d
+```
+
+Apply schema and seed data, then run apps:
+
+```bash
 pnpm db:migrate
 pnpm db:seed
+pnpm dev
 ```
+
+| Service            | URL                                 |
+| ------------------ | ----------------------------------- |
+| Web                | http://localhost:3000               |
+| API health         | http://localhost:4000/api/v1/health |
+| API docs (Swagger) | http://localhost:4000/api/docs      |
+| MinIO console      | http://localhost:9001               |
+
+## Scripts
+
+| Command            | Description                             |
+| ------------------ | --------------------------------------- |
+| `pnpm dev`         | Start web + API in parallel (Turborepo) |
+| `pnpm build`       | Build all packages                      |
+| `pnpm lint`        | ESLint across the monorepo              |
+| `pnpm typecheck`   | TypeScript check all packages           |
+| `pnpm test`        | Run tests (API unit/e2e via Turbo)      |
+| `pnpm format`      | Prettier write                          |
+| `pnpm db:generate` | Generate Prisma client                  |
+| `pnpm db:migrate`  | Run dev migrations                      |
+| `pnpm db:seed`     | Seed roles, permissions, admin user     |
+
+Filter to a single app: `pnpm --filter api test`, `pnpm --filter web build`, etc.
 
 ## Environment variables
 
-All required local environment variables are documented in `.env.example`. Never commit `.env` or production secrets.
+All required variables are listed in [`.env.example`](.env.example). Never commit `.env` or production secrets.
+
+Production reference: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+
+## Docker (production images)
+
+Build from the repository root:
+
+```bash
+# NestJS API (multi-stage, pnpm monorepo)
+docker build -f docker/Dockerfile.api -t blog-api .
+
+# Next.js web (standalone output)
+docker build -f docker/Dockerfile.web \
+  --build-arg NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1 \
+  -t blog-web .
+```
+
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for env vars, migrations, domain/SSL, and deploy steps.
+
+## CI
+
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on PRs and pushes to `main`: install, Prisma generate, migrate, lint, typecheck, API tests, and full build (Node 20, pnpm).
+
+## Documentation
+
+| Doc                                            | Purpose                             |
+| ---------------------------------------------- | ----------------------------------- |
+| [`docs/TODO.md`](docs/TODO.md)                 | Phased implementation checklist     |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)     | Production deploy runbook           |
+| [`docs/USER-GUIDE.md`](docs/USER-GUIDE.md)     | Admin how-to (create/publish posts) |
+| [`docs/architecture.md`](docs/architecture.md) | System architecture                 |
+| [`docs/ADR.md`](docs/ADR.md)                   | Architecture decision records       |
 
 ## Project workflow
 
-Follow [`docs/TODO.md`](docs/TODO.md) in order. Architecture decisions and MVP scope are in [`docs/ADR.md`](docs/ADR.md).
+Follow [`docs/TODO.md`](docs/TODO.md) top to bottom within each phase. Keep `main` deployable; use feature branches for larger changes.

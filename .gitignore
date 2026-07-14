@@ -16,6 +16,9 @@ postgres-data/
 redis-data/
 minio-data/
 
+# Prisma generated client (regenerate with pnpm db:generate)
+packages/database/src/generated/
+
 # Tooling
 .DS_Store
 *.log

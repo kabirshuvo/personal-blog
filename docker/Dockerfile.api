@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+
+FROM node:20-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@11.0.9 --activate
+WORKDIR /app
+
+FROM base AS builder
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/database/package.json ./packages/database/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/config/tsconfig.base.json ./packages/config/
+RUN pnpm install --frozen-lockfile
+
+COPY packages/database ./packages/database
+COPY packages/shared ./packages/shared
+COPY apps/api ./apps/api
+
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
+RUN pnpm --filter @blog/database generate
+RUN pnpm --filter @blog/shared build
+RUN pnpm --filter api build
+RUN pnpm deploy --filter=api --prod /prod/api
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs
+
+COPY --from=builder --chown=nestjs:nodejs /prod/api ./
+
+USER nestjs
+EXPOSE 4000
+ENV API_PORT=4000
+
+CMD ["node", "dist/main.js"]

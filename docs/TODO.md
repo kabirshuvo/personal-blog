@@ -157,55 +157,55 @@ flowchart TD
 
 ### 2.1 Identity & access models
 
-- [ ] Define `User` model (email, password hash, profile fields, status)
-- [ ] Define `Role` model (admin, editor, author, subscriber)
-- [ ] Define `Permission` model (granular: `posts:create`, etc.)
-- [ ] Define `RolePermission` join table
-- [ ] Define `Session` model (refresh token tracking)
-- [ ] Define `AuditLog` model (actor, action, resource, metadata, IP)
+- [x] Define `User` model (email, password hash, profile fields, status)
+- [x] Define `Role` model (admin, editor, author, subscriber)
+- [x] Define `Permission` model (granular: `posts:create`, etc.)
+- [x] Define `RolePermission` join table
+- [x] Define `Session` model (refresh token tracking)
+- [x] Define `AuditLog` model (actor, action, resource, metadata, IP)
 
 ### 2.2 Content models
 
-- [ ] Define `Post` model (title, slug, content, excerpt, status, publishedAt, scheduledAt)
-- [ ] Define `Category` model (name, slug, description)
-- [ ] Define `Tag` model (name, slug)
-- [ ] Define `PostTag` join table
-- [ ] Define `Comment` model (threaded via parentId, moderation status)
-- [ ] Define `Media` model (filename, mimeType, size, url, storageKey, altText)
+- [x] Define `Post` model (title, slug, content, excerpt, status, publishedAt, scheduledAt)
+- [x] Define `Category` model (name, slug, description)
+- [x] Define `Tag` model (name, slug)
+- [x] Define `PostTag` join table
+- [x] Define `Comment` model (threaded via parentId, moderation status)
+- [x] Define `Media` model (filename, mimeType, size, url, storageKey, altText)
 
 ### 2.3 Engagement models
 
-- [ ] Define `Bookmark` model (userId + postId unique)
-- [ ] Define `ReadingHistory` model (userId, postId, lastReadAt, progress)
-- [ ] Define `NewsletterSubscriber` model (email, status, subscribedAt)
+- [x] Define `Bookmark` model (userId + postId unique)
+- [x] Define `ReadingHistory` model (userId, postId, lastReadAt, progress)
+- [x] Define `NewsletterSubscriber` model (email, status, subscribedAt)
 
 ### 2.4 Analytics models
 
-- [ ] Define `AnalyticsEvent` model (eventType, userId?, postId?, metadata JSON, createdAt)
-- [ ] Define `AnalyticsDailyAggregate` model (date, metric, value, dimensions JSON)
-- [ ] Define `ChartDataset` model (name, type, source, config JSON)
-- [ ] Define `ChartDataPoint` model (datasetId, label, value, timestamp)
+- [x] Define `AnalyticsEvent` model (eventType, userId?, postId?, metadata JSON, createdAt)
+- [x] Define `AnalyticsDailyAggregate` model (date, metric, value, dimensions JSON)
+- [x] Define `ChartDataset` model (name, type, source, config JSON)
+- [x] Define `ChartDataPoint` model (datasetId, label, value, timestamp)
 
 ### 2.5 System models
 
-- [ ] Define `Setting` model (key-value site configuration)
-- [ ] Define `Notification` model (userId, type, content, readAt)
+- [x] Define `Setting` model (key-value site configuration)
+- [x] Define `Notification` model (userId, type, content, readAt)
 
 ### 2.6 Schema hardening
 
-- [ ] Add indexes: `posts(slug)`, `posts(status, publishedAt)`, `analytics_events(createdAt, eventType)`
-- [ ] Add unique constraints where needed (slugs, emails)
-- [ ] Add cascading delete rules (e.g. comments on post delete)
-- [ ] Add `onDelete` / `onUpdate` relations explicitly
-- [ ] Run initial migration: `prisma migrate dev --name init`
-- [ ] Create seed script: default roles, permissions, admin user, sample categories
-- [ ] Verify seed runs: `pnpm db:seed`
+- [x] Add indexes: `posts(slug)`, `posts(status, publishedAt)`, `analytics_events(createdAt, eventType)`
+- [x] Add unique constraints where needed (slugs, emails)
+- [x] Add cascading delete rules (e.g. comments on post delete)
+- [x] Add `onDelete` / `onUpdate` relations explicitly
+- [x] Run initial migration: `prisma migrate dev --name init`
+- [x] Create seed script: default roles, permissions, admin user, sample categories
+- [x] Verify seed runs: `pnpm db:seed`
 
 ### Phase 2 Gate
 
-- [ ] All models migrate without errors
-- [ ] Seed creates admin user + 4 roles + base permissions
-- [ ] Prisma Client generates and is importable from `packages/database`
+- [x] All models migrate without errors
+- [x] Seed creates admin user + 4 roles + base permissions
+- [x] Prisma Client generates and is importable from `packages/database`
 
 ---
 
@@ -215,48 +215,48 @@ flowchart TD
 
 ### 3.1 Auth module (NestJS)
 
-- [ ] Implement password hashing (bcrypt / argon2)
-- [ ] Implement `POST /auth/register` (subscriber role by default)
-- [ ] Implement `POST /auth/login` (returns access token)
-- [ ] Implement refresh token flow with HTTP-only cookie
-- [ ] Store refresh token JTI in Redis with TTL
-- [ ] Implement `POST /auth/refresh`
-- [ ] Implement `POST /auth/logout` (invalidate refresh token)
-- [ ] Implement `GET /auth/me` (current user + role + permissions)
+- [x] Implement password hashing (bcrypt / argon2)
+- [x] Implement `POST /auth/register` (subscriber role by default)
+- [x] Implement `POST /auth/login` (returns access token)
+- [x] Implement refresh token flow with HTTP-only cookie
+- [x] Store refresh token JTI in Redis with TTL
+- [x] Implement `POST /auth/refresh`
+- [x] Implement `POST /auth/logout` (invalidate refresh token)
+- [x] Implement `GET /auth/me` (current user + role + permissions)
 
 ### 3.2 Guards & decorators
 
-- [ ] Create `@Public()` decorator for unauthenticated routes
-- [ ] Create `@Roles()` decorator
-- [ ] Create `@Permissions()` decorator
-- [ ] Implement `JwtAuthGuard`
-- [ ] Implement `RolesGuard`
-- [ ] Implement `PermissionsGuard`
-- [ ] Apply guards globally; mark public routes explicitly
+- [x] Create `@Public()` decorator for unauthenticated routes
+- [x] Create `@Roles()` decorator
+- [x] Create `@Permissions()` decorator
+- [x] Implement `JwtAuthGuard`
+- [x] Implement `RolesGuard`
+- [x] Implement `PermissionsGuard`
+- [x] Apply guards globally; mark public routes explicitly
 
 ### 3.3 Auth frontend (Next.js)
 
-- [ ] Build `/login` page
-- [ ] Build `/register` page
-- [ ] Implement auth context / session hook
-- [ ] Configure API client with token refresh interceptor
-- [ ] Add Next.js middleware to protect `(admin)` and `(auth)` routes
-- [ ] Redirect unauthenticated users from `/admin/*` to `/login`
-- [ ] Redirect authenticated users away from `/login` to `/admin`
+- [x] Build `/login` page
+- [x] Build `/register` page
+- [x] Implement auth context / session hook
+- [x] Configure API client with token refresh interceptor
+- [x] Add Next.js middleware to protect `(admin)` and `(auth)` routes
+- [x] Redirect unauthenticated users from `/admin/*` to `/login`
+- [x] Redirect authenticated users away from `/login` to `/admin`
 
 ### 3.4 User module (basic)
 
-- [ ] Implement `GET /users/me`
-- [ ] Implement `PATCH /users/me` (profile update)
-- [ ] Implement password change endpoint
-- [ ] Build `/profile` page (view + edit)
+- [x] Implement `GET /users/me`
+- [x] Implement `PATCH /users/me` (profile update)
+- [x] Implement password change endpoint
+- [x] Build `/profile` page (view + edit)
 
 ### Phase 3 Gate
 
-- [ ] Register → login → access protected route works end-to-end
-- [ ] Admin role can access `/admin`; subscriber cannot
-- [ ] Refresh token rotation works; logout invalidates session
-- [ ] Invalid/expired tokens return 401 consistently
+- [x] Register → login → access protected route works end-to-end
+- [x] Admin role can access `/admin`; subscriber cannot
+- [x] Refresh token rotation works; logout invalidates session
+- [x] Invalid/expired tokens return 401 consistently
 
 ---
 
@@ -266,50 +266,50 @@ flowchart TD
 
 ### 4.1 Categories & tags module
 
-- [ ] `GET /categories` — public list
-- [ ] `GET /tags` — public list
-- [ ] Admin CRUD: `POST/PATCH/DELETE /admin/categories`
-- [ ] Admin CRUD: `POST/PATCH/DELETE /admin/tags`
-- [ ] Slug auto-generation utility (unique, URL-safe)
+- [x] `GET /categories` — public list
+- [x] `GET /tags` — public list
+- [x] Admin CRUD: `POST/PATCH/DELETE /admin/categories`
+- [x] Admin CRUD: `POST/PATCH/DELETE /admin/tags`
+- [x] Slug auto-generation utility (unique, URL-safe)
 
 ### 4.2 Posts module — public endpoints
 
-- [ ] `GET /posts` — paginated, filter by category/tag/status=published
-- [ ] `GET /posts/:slug` — single published post
-- [ ] `GET /posts/featured` — featured posts
-- [ ] `GET /posts/trending` — trending logic (views or recent engagement)
-- [ ] `GET /posts/:slug/related` — related by category/tags
+- [x] `GET /posts` — paginated, filter by category/tag/status=published
+- [x] `GET /posts/:slug` — single published post
+- [x] `GET /posts/featured` — featured posts
+- [x] `GET /posts/trending` — trending logic (views or recent engagement)
+- [x] `GET /posts/:slug/related` — related by category/tags
 
 ### 4.3 Posts module — admin endpoints
 
-- [ ] `GET /admin/posts` — all statuses, paginated, searchable
-- [ ] `GET /admin/posts/:id` — single post (any status)
-- [ ] `POST /admin/posts` — create draft
-- [ ] `PATCH /admin/posts/:id` — update
-- [ ] `DELETE /admin/posts/:id` — soft or hard delete
-- [ ] `POST /admin/posts/:id/publish` — publish immediately
-- [ ] `POST /admin/posts/:id/schedule` — set scheduledAt
-- [ ] Enforce author can only edit own posts; editor/admin can edit all
+- [x] `GET /admin/posts` — all statuses, paginated, searchable
+- [x] `GET /admin/posts/:id` — single post (any status)
+- [x] `POST /admin/posts` — create draft
+- [x] `PATCH /admin/posts/:id` — update
+- [x] `DELETE /admin/posts/:id` — soft or hard delete
+- [x] `POST /admin/posts/:id/publish` — publish immediately
+- [x] `POST /admin/posts/:id/schedule` — set scheduledAt
+- [x] Enforce author can only edit own posts; editor/admin can edit all
 
 ### 4.4 Shared types & validation
 
-- [ ] Define DTOs in `packages/shared`: CreatePostDto, UpdatePostDto, PostResponse
-- [ ] Add validation: title required, slug unique, content min length
-- [ ] Add post status enum: DRAFT, SCHEDULED, PUBLISHED, ARCHIVED
+- [x] Define DTOs in `packages/shared`: CreatePostDto, UpdatePostDto, PostResponse
+- [x] Add validation: title required, slug unique, content min length
+- [x] Add post status enum: DRAFT, SCHEDULED, PUBLISHED, ARCHIVED
 
 ### 4.5 Scheduled publishing (background job)
 
-- [ ] Set up BullMQ in NestJS
-- [ ] Create scheduled publish job (runs every minute)
-- [ ] Publish posts where `scheduledAt <= now` and status = SCHEDULED
-- [ ] Log publish events to audit log
+- [x] Set up BullMQ in NestJS
+- [x] Create scheduled publish job (runs every minute)
+- [x] Publish posts where `scheduledAt <= now` and status = SCHEDULED
+- [x] Log publish events to audit log
 
 ### Phase 4 Gate
 
-- [ ] Admin can create, edit, publish, and schedule posts via API
-- [ ] Public API returns only published posts
-- [ ] Scheduled posts auto-publish when due
-- [ ] RBAC enforced on all admin post routes
+- [x] Admin can create, edit, publish, and schedule posts via API
+- [x] Public API returns only published posts
+- [x] Scheduled posts auto-publish when due
+- [x] RBAC enforced on all admin post routes
 
 ---
 
@@ -319,58 +319,58 @@ flowchart TD
 
 ### 5.1 Layout & design system
 
-- [ ] Build public layout: header, footer, navigation
-- [ ] Build responsive mobile navigation
-- [ ] Create reusable components: PostCard, CategoryBadge, TagList, Pagination
-- [ ] Apply typography scale and reading-optimized article layout
-- [ ] Verify dark/light mode on all public pages
+- [x] Build public layout: header, footer, navigation
+- [x] Build responsive mobile navigation
+- [x] Create reusable components: PostCard, CategoryBadge, TagList, Pagination
+- [x] Apply typography scale and reading-optimized article layout
+- [x] Verify dark/light mode on all public pages
 
 ### 5.2 Core pages
 
-- [ ] **Home (`/`)** — featured, latest, trending sections, category grid
-- [ ] **Blog listing (`/blog`)** — paginated post grid with filters
-- [ ] **Article page (`/blog/[slug]`)** — SSR/ISR, rich content render, author, date
-- [ ] **Category page (`/category/[slug]`)**
-- [ ] **Tag page (`/tag/[slug]`)**
-- [ ] **Author page (`/author/[slug]`)** — bio + post list
+- [x] **Home (`/`)** — featured, latest, trending sections, category grid
+- [x] **Blog listing (`/blog`)** — paginated post grid with filters
+- [x] **Article page (`/blog/[slug]`)** — SSR/ISR, rich content render, author, date
+- [x] **Category page (`/category/[slug]`)**
+- [x] **Tag page (`/tag/[slug]`)**
+- [x] **Author page (`/author/[slug]`)** — bio + post list
 
 ### 5.3 Home page features
 
-- [ ] Featured articles section (from API)
-- [ ] Latest posts section
-- [ ] Trending posts section
-- [ ] Categories showcase
-- [ ] Newsletter subscription form (UI only — wire in Phase 11)
+- [x] Featured articles section (from API)
+- [x] Latest posts section
+- [x] Trending posts section
+- [x] Categories showcase
+- [x] Newsletter subscription form (UI only — wire in Phase 11)
 
 ### 5.4 Article page features
 
-- [ ] Render rich HTML/Markdown content safely
-- [ ] Display tags and category
-- [ ] Show author profile snippet
-- [ ] Related posts section
-- [ ] Social share buttons (Twitter/X, LinkedIn, copy link)
-- [ ] Reading progress indicator (optional)
+- [x] Render rich HTML/Markdown content safely
+- [x] Display tags and category
+- [x] Show author profile snippet
+- [x] Related posts section
+- [x] Social share buttons (Twitter/X, LinkedIn, copy link)
+- [~] Reading progress indicator (optional)
 
 ### 5.5 Search
 
-- [ ] Build `/search` page with query input
-- [ ] Implement `GET /search?q=` API (PostgreSQL full-text search)
-- [ ] Display search results with highlighting
-- [ ] Handle empty results state
+- [x] Build `/search` page with query input
+- [x] Implement `GET /search?q=` API (PostgreSQL full-text search)
+- [x] Display search results with highlighting
+- [x] Handle empty results state
 
 ### 5.6 Performance (initial)
 
-- [ ] Configure ISR revalidation on home and listing pages
-- [ ] Add `generateMetadata` for article pages (title, description)
-- [ ] Lazy load below-fold images
-- [ ] Verify Lighthouse score baseline (target > 80 performance)
+- [x] Configure ISR revalidation on home and listing pages
+- [x] Add `generateMetadata` for article pages (title, description)
+- [x] Lazy load below-fold images
+- [~] Verify Lighthouse score baseline (target > 80 performance)
 
 ### Phase 5 Gate
 
-- [ ] All public routes render with real API data
-- [ ] Article pages work with SSR/ISR
-- [ ] Mobile layout verified at 375px width
-- [ ] Search returns relevant results
+- [x] All public routes render with real API data
+- [x] Article pages work with SSR/ISR
+- [x] Mobile layout verified at 375px width
+- [x] Search returns relevant results
 
 ---
 
@@ -380,53 +380,53 @@ flowchart TD
 
 ### 6.1 Admin shell
 
-- [ ] Build admin layout: sidebar navigation, top bar, breadcrumbs
-- [ ] Admin nav items: Dashboard, Posts, Media, Categories, Tags, Users, SEO, Analytics, Settings
-- [ ] Role-based nav visibility (hide Users from non-admin)
-- [ ] Admin dashboard placeholder page
+- [x] Build admin layout: sidebar navigation, top bar, breadcrumbs
+- [x] Admin nav items: Dashboard, Posts, Media, Categories, Tags, Users, SEO, Analytics, Settings
+- [x] Role-based nav visibility (hide Users from non-admin)
+- [x] Admin dashboard placeholder page
 
 ### 6.2 Posts management UI
 
-- [ ] **Posts list (`/admin/posts`)** — table with status, author, date, actions
-- [ ] Filters: status, category, author, date range
-- [ ] Bulk actions: publish, archive, delete
-- [ ] **Post editor (`/admin/posts/new`, `/admin/posts/[id]/edit`)**
-- [ ] Integrate rich text editor (TipTap or similar)
-- [ ] Title, slug (auto-gen), excerpt, featured image selector
-- [ ] Category and tag multi-select
-- [ ] Status controls: save draft, publish, schedule (date picker)
-- [ ] Preview mode (opens public URL or inline preview)
+- [x] **Posts list (`/admin/posts`)** — table with status, author, date, actions
+- [x] Filters: status, category, author, date range
+- [~] Bulk actions: publish, archive, delete
+- [x] **Post editor (`/admin/posts/new`, `/admin/posts/[id]/edit`)**
+- [x] Integrate rich text editor (TipTap or similar)
+- [x] Title, slug (auto-gen), excerpt, featured image selector
+- [x] Category and tag multi-select
+- [x] Status controls: save draft, publish, schedule (date picker)
+- [x] Preview mode (opens public URL or inline preview)
 
 ### 6.3 Categories & tags UI
 
-- [ ] `/admin/categories` — CRUD table + modal form
-- [ ] `/admin/tags` — CRUD table + modal form
+- [x] `/admin/categories` — CRUD table + modal form
+- [x] `/admin/tags` — CRUD table + modal form
 
 ### 6.4 User management UI (admin only)
 
-- [ ] `/admin/users` — user list with role, status, last login
-- [ ] Create user / invite flow
-- [ ] Edit role assignment
-- [ ] Deactivate / activate user
+- [x] `/admin/users` — user list with role, status, last login
+- [x] Create user / invite flow
+- [x] Edit role assignment
+- [x] Deactivate / activate user
 
 ### 6.5 Settings UI
 
-- [ ] `/admin/settings` — site name, description, logo URL, social links
-- [ ] Persist via Settings API
+- [x] `/admin/settings` — site name, description, logo URL, social links
+- [x] Persist via Settings API
 
 ### 6.6 TanStack Query setup
 
-- [ ] Configure QueryClient in admin layout
-- [ ] Add query hooks: `usePosts`, `usePost`, `useCategories`, etc.
-- [ ] Add mutation hooks with optimistic updates where appropriate
-- [ ] Toast notifications for success/error states
+- [x] Configure QueryClient in admin layout
+- [x] Add query hooks: `usePosts`, `usePost`, `useCategories`, etc.
+- [x] Add mutation hooks with optimistic updates where appropriate
+- [x] Toast notifications for success/error states
 
 ### Phase 6 Gate
 
-- [ ] Admin can manage full post lifecycle without using API directly
-- [ ] Rich text editor saves and renders content correctly
-- [ ] Non-admin roles see appropriate UI restrictions
-- [ ] All admin forms validate before submit
+- [x] Admin can manage full post lifecycle without using API directly
+- [x] Rich text editor saves and renders content correctly
+- [x] Non-admin roles see appropriate UI restrictions
+- [x] All admin forms validate before submit
 
 ---
 
@@ -436,40 +436,40 @@ flowchart TD
 
 ### 7.1 Storage integration
 
-- [ ] Configure S3/R2/MinIO client in NestJS
-- [ ] Implement presigned upload URL generation
-- [ ] Implement `POST /admin/media/upload` (direct or presigned flow)
-- [ ] Store metadata in `Media` table after upload
-- [ ] Implement file type validation (images, video, documents)
-- [ ] Implement file size limits
+- [x] Configure S3/R2/MinIO client in NestJS
+- [x] Implement presigned upload URL generation
+- [x] Implement `POST /admin/media/upload` (direct or presigned flow)
+- [x] Store metadata in `Media` table after upload
+- [x] Implement file type validation (images, video, documents)
+- [x] Implement file size limits
 
 ### 7.2 Media API
 
-- [ ] `GET /admin/media` — paginated library with filters (type, date)
-- [ ] `GET /admin/media/:id`
-- [ ] `PATCH /admin/media/:id` — update alt text, caption
-- [ ] `DELETE /admin/media/:id` — remove from storage + DB
+- [x] `GET /admin/media` — paginated library with filters (type, date)
+- [x] `GET /admin/media/:id`
+- [x] `PATCH /admin/media/:id` — update alt text, caption
+- [x] `DELETE /admin/media/:id` — remove from storage + DB
 
 ### 7.3 Media UI
 
-- [ ] `/admin/media` — grid/list view with thumbnails
-- [ ] Upload dropzone (drag & drop + file picker)
-- [ ] Upload progress indicator
-- [ ] Media detail panel (preview, alt text, URL copy, delete)
-- [ ] Media picker modal (used in post editor for featured image + inline)
+- [x] `/admin/media` — grid/list view with thumbnails
+- [x] Upload dropzone (drag & drop + file picker)
+- [x] Upload progress indicator
+- [x] Media detail panel (preview, alt text, URL copy, delete)
+- [x] Media picker modal (used in post editor for featured image + inline)
 
 ### 7.4 Media optimization
 
-- [ ] Generate image thumbnails on upload (sharp)
-- [ ] Store width/height metadata
-- [ ] Serve images via Next.js `<Image>` with remote pattern config
-- [ ] Add WebP conversion (optional for v1)
+- [x] Generate image thumbnails on upload (sharp)
+- [x] Store width/height metadata
+- [x] Serve images via Next.js `<Image>` with remote pattern config
+- [~] Add WebP conversion (optional for v1)
 
 ### Phase 7 Gate
 
-- [ ] Upload image → appears in library → attach to post → renders on public site
-- [ ] Invalid file types rejected with clear error
-- [ ] Delete removes file from storage and DB
+- [x] Upload image → appears in library → attach to post → renders on public site
+- [x] Invalid file types rejected with clear error
+- [x] Delete removes file from storage and DB
 
 ---
 
@@ -479,40 +479,40 @@ flowchart TD
 
 ### 8.1 Comments
 
-- [ ] `GET /comments?postId=` — public, approved only
-- [ ] `POST /comments` — authenticated users
-- [ ] `PATCH /admin/comments/:id` — approve/reject/edit
-- [ ] `DELETE /admin/comments/:id`
-- [ ] Support threaded replies (parentId)
-- [ ] Rate limit comment submission
-- [ ] Build comment section UI on article page
-- [ ] Build comment moderation UI in admin
+- [x] `GET /comments?postId=` — public, approved only
+- [x] `POST /comments` — authenticated users
+- [x] `PATCH /admin/comments/:id` — approve/reject/edit
+- [x] `DELETE /admin/comments/:id`
+- [x] Support threaded replies (parentId)
+- [x] Rate limit comment submission
+- [x] Build comment section UI on article page
+- [x] Build comment moderation UI in admin
 
 ### 8.2 Bookmarks
 
-- [ ] `GET /bookmarks` — user's saved posts
-- [ ] `POST /bookmarks` — add bookmark
-- [ ] `DELETE /bookmarks/:postId` — remove
-- [ ] Bookmark toggle button on article page
-- [ ] `/bookmarks` page for logged-in users
+- [x] `GET /bookmarks` — user's saved posts
+- [x] `POST /bookmarks` — add bookmark
+- [x] `DELETE /bookmarks/:postId` — remove
+- [x] Bookmark toggle button on article page
+- [x] `/bookmarks` page for logged-in users
 
 ### 8.3 Reading history
 
-- [ ] Track page view on article read (authenticated)
-- [ ] `GET /reading-history` — user's recent reads
-- [ ] `/history` page for logged-in users
-- [ ] Optional: reading progress percentage
+- [x] Track page view on article read (authenticated)
+- [x] `GET /reading-history` — user's recent reads
+- [x] `/history` page for logged-in users
+- [x] Optional: reading progress percentage
 
 ### 8.4 Author profiles (public)
 
-- [ ] Author bio field on User model (if not already)
-- [ ] Public author page with avatar, bio, social links, posts
+- [x] Author bio field on User model (if not already)
+- [x] Public author page with avatar, bio, social links, posts
 
 ### Phase 8 Gate
 
-- [ ] Logged-in user can comment, bookmark, and view history
-- [ ] Admin can moderate comments
-- [ ] Guest users can read comments but not post
+- [x] Logged-in user can comment, bookmark, and view history
+- [x] Admin can moderate comments
+- [x] Guest users can read comments but not post
 
 ---
 
@@ -522,36 +522,36 @@ flowchart TD
 
 ### 9.1 Meta & Open Graph
 
-- [ ] Per-post meta title and description fields (admin editor)
-- [ ] `generateMetadata` on all public pages using post/site settings
-- [ ] Open Graph tags: og:title, og:description, og:image, og:url
-- [ ] Twitter Card tags
-- [ ] Canonical URLs on article pages
+- [x] Per-post meta title and description fields (admin editor)
+- [x] `generateMetadata` on all public pages using post/site settings
+- [x] Open Graph tags: og:title, og:description, og:image, og:url
+- [x] Twitter Card tags
+- [x] Canonical URLs on article pages
 
 ### 9.2 SEO module (API)
 
-- [ ] `GET /sitemap.xml` — dynamic sitemap (posts, categories, tags, authors)
-- [ ] `GET /robots.txt`
-- [ ] Admin: edit default meta templates in SEO settings
-- [ ] Admin: `/admin/seo` — overview of posts missing meta description
+- [x] `GET /sitemap.xml` — dynamic sitemap (posts, categories, tags, authors)
+- [x] `GET /robots.txt`
+- [x] Admin: edit default meta templates in SEO settings
+- [x] Admin: `/admin/seo` — overview of posts missing meta description
 
 ### 9.3 URL management
 
-- [ ] Slug uniqueness validation with helpful errors
-- [ ] Redirect old slug → new slug on post slug change (301)
-- [ ] Store slug history for redirects (optional)
+- [x] Slug uniqueness validation with helpful errors
+- [x] Redirect old slug → new slug on post slug change (301)
+- [x] Store slug history for redirects (optional)
 
 ### 9.4 Structured data
 
-- [ ] JSON-LD `Article` schema on blog posts
-- [ ] JSON-LD `WebSite` schema on home page
-- [ ] Validate with Google Rich Results Test
+- [x] JSON-LD `Article` schema on blog posts
+- [x] JSON-LD `WebSite` schema on home page
+- [x] Validate with Google Rich Results Test
 
 ### Phase 9 Gate
 
-- [ ] `/sitemap.xml` and `/robots.txt` accessible
-- [ ] Article pages pass basic OG preview (Facebook/Twitter debugger)
-- [ ] No published post missing meta description (admin warning shown)
+- [x] `/sitemap.xml` and `/robots.txt` accessible
+- [x] Article pages pass basic OG preview (Facebook/Twitter debugger)
+- [x] No published post missing meta description (admin warning shown)
 
 ---
 
@@ -561,59 +561,59 @@ flowchart TD
 
 ### 10.1 Event tracking
 
-- [ ] Implement `POST /analytics/events` — public, rate-limited
-- [ ] Event types: `page_view`, `post_view`, `search`, `signup`, `comment`
-- [ ] Client-side tracker hook in Next.js public layout
-- [ ] Capture: path, postId, referrer, userAgent, sessionId (anonymous)
-- [ ] Batch events client-side to reduce API calls (optional)
+- [x] Implement `POST /analytics/events` — public, rate-limited
+- [x] Event types: `page_view`, `post_view`, `search`, `signup`, `comment`
+- [x] Client-side tracker hook in Next.js public layout
+- [x] Capture: path, postId, referrer, userAgent, sessionId (anonymous)
+- [x] Batch events client-side to reduce API calls (optional)
 
 ### 10.2 Aggregation pipeline
 
-- [ ] BullMQ job: hourly aggregation → `AnalyticsDailyAggregate`
-- [ ] Metrics: total page views, unique visitors (session), top posts, top categories
-- [ ] BullMQ job: daily roll-up for monthly statistics
-- [ ] Cache aggregated results in Redis (TTL 5 min)
+- [x] BullMQ job: hourly aggregation → `AnalyticsDailyAggregate`
+- [x] Metrics: total page views, unique visitors (session), top posts, top categories
+- [x] BullMQ job: daily roll-up for monthly statistics
+- [x] Cache aggregated results in Redis (TTL 5 min)
 
 ### 10.3 Analytics API (admin)
 
-- [ ] `GET /admin/analytics/overview` — summary cards (today, week, month)
-- [ ] `GET /admin/analytics/traffic` — time series data
-- [ ] `GET /admin/analytics/popular-posts` — bar chart data
-- [ ] `GET /admin/analytics/categories` — pie chart data
-- [ ] `GET /admin/analytics/engagement` — comments, bookmarks, signups
+- [x] `GET /admin/analytics/overview` — summary cards (today, week, month)
+- [x] `GET /admin/analytics/traffic` — time series data
+- [x] `GET /admin/analytics/popular-posts` — bar chart data
+- [x] `GET /admin/analytics/categories` — pie chart data
+- [x] `GET /admin/analytics/engagement` — comments, bookmarks, signups
 
 ### 10.4 Real-time WebSocket
 
-- [ ] Implement WebSocket gateway in NestJS (`/ws/analytics`)
-- [ ] Push live page view count to connected admin clients
-- [ ] Use Redis pub/sub to fan out events across API instances
-- [ ] Authenticate WebSocket connections (admin only)
+- [x] Implement WebSocket gateway in NestJS (`/ws/analytics`)
+- [x] Push live page view count to connected admin clients
+- [x] Use Redis pub/sub to fan out events across API instances
+- [x] Authenticate WebSocket connections (admin only)
 
 ### 10.5 Chart datasets (custom)
 
-- [ ] Admin CRUD for `ChartDataset` and `ChartDataPoint`
-- [ ] Support manual data entry and CSV import
-- [ ] Support external API URL as data source (fetch + cache)
-- [ ] `GET /admin/chart-datasets/:id/data`
+- [x] Admin CRUD for `ChartDataset` and `ChartDataPoint`
+- [x] Support manual data entry and CSV import
+- [x] Support external API URL as data source (fetch + cache)
+- [x] `GET /admin/chart-datasets/:id/data`
 
 ### 10.6 Admin dashboard UI
 
-- [ ] `/admin` dashboard — overview stat cards
-- [ ] Line chart: traffic over time (Recharts)
-- [ ] Bar chart: popular posts
-- [ ] Pie chart: traffic by category
-- [ ] Area chart: engagement metrics
-- [ ] Live indicator on real-time page view counter
-- [ ] Date range selector (7d, 30d, 90d, custom)
-- [ ] `/admin/analytics` — full analytics page with all charts
-- [ ] Custom chart builder UI (basic)
+- [x] `/admin` dashboard — overview stat cards
+- [x] Line chart: traffic over time (Recharts)
+- [x] Bar chart: popular posts
+- [x] Pie chart: traffic by category
+- [x] Area chart: engagement metrics
+- [x] Live indicator on real-time page view counter
+- [x] Date range selector (7d, 30d, 90d, custom)
+- [x] `/admin/analytics` — full analytics page with all charts
+- [~] Custom chart builder UI (basic)
 
 ### Phase 10 Gate
 
-- [ ] Page views recorded when visiting public pages
-- [ ] Admin dashboard shows accurate aggregated data
-- [ ] WebSocket updates live view count without page refresh
-- [ ] At least 4 chart types render with real data
+- [x] Page views recorded when visiting public pages
+- [x] Admin dashboard shows accurate aggregated data
+- [x] WebSocket updates live view count without page refresh
+- [x] At least 4 chart types render with real data
 
 ---
 
@@ -623,31 +623,31 @@ flowchart TD
 
 ### 11.1 Newsletter
 
-- [ ] `POST /newsletter/subscribe` — public, double opt-in optional
-- [ ] Store in `NewsletterSubscriber` table
-- [ ] Wire home page newsletter form to API
-- [ ] Admin: `/admin/newsletter` — subscriber list, export CSV
-- [ ] Unsubscribe endpoint + page
+- [~] `POST /newsletter/subscribe` — public, double opt-in optional
+- [x] Store in `NewsletterSubscriber` table
+- [x] Wire home page newsletter form to API
+- [x] Admin: `/admin/newsletter` — subscriber list, export CSV
+- [x] Unsubscribe endpoint + page
 
 ### 11.2 In-app notifications
 
-- [ ] `GET /notifications` — user's notifications
-- [ ] `PATCH /notifications/:id/read`
-- [ ] Create notifications on: comment reply, post published (for authors)
-- [ ] Notification bell in header (logged-in users)
+- [x] `GET /notifications` — user's notifications
+- [x] `PATCH /notifications/:id/read`
+- [x] Create notifications on: comment reply, post published (for authors)
+- [x] Notification bell in header (logged-in users)
 
 ### 11.3 Email (optional for v1)
 
-- [ ] Configure email provider (Resend / SendGrid / SMTP)
-- [ ] Send welcome email on register
-- [ ] Send newsletter confirmation email
-- [ ] Send new post notification to subscribers (manual trigger from admin)
+- [x] Configure email provider (Resend / SendGrid / SMTP)
+- [x] Send welcome email on register
+- [x] Send newsletter confirmation email
+- [~] Send new post notification to subscribers (manual trigger from admin)
 
 ### Phase 11 Gate
 
-- [ ] Newsletter signup works from home page
-- [ ] Admin can view subscriber list
-- [ ] In-app notifications appear for comment replies
+- [x] Newsletter signup works from home page
+- [x] Admin can view subscriber list
+- [x] In-app notifications appear for comment replies
 
 ---
 
@@ -657,47 +657,47 @@ flowchart TD
 
 ### 12.1 API security
 
-- [ ] Rate limiting on all public endpoints (Redis-backed)
-- [ ] Stricter rate limits on auth endpoints (login, register)
-- [ ] Request size limits (body parser config)
-- [ ] Helmet.js security headers
-- [ ] CORS whitelist for production domains only
+- [x] Rate limiting on all public endpoints (Redis-backed)
+- [x] Stricter rate limits on auth endpoints (login, register)
+- [x] Request size limits (body parser config)
+- [x] Helmet.js security headers
+- [x] CORS whitelist for production domains only
 
 ### 12.2 Input sanitization
 
-- [ ] Sanitize rich text HTML on save (DOMPurify server-side)
-- [ ] Validate and sanitize all DTO inputs
-- [ ] Escape user content in API responses where needed
+- [x] Sanitize rich text HTML on save (DOMPurify server-side)
+- [x] Validate and sanitize all DTO inputs
+- [x] Escape user content in API responses where needed
 
 ### 12.3 CSRF & cookies
 
-- [ ] SameSite=Strict on refresh cookie
-- [ ] Secure flag on cookies in production
-- [ ] CSRF protection for cookie-based mutations (if applicable)
+- [x] SameSite=Strict on refresh cookie
+- [x] Secure flag on cookies in production
+- [~] CSRF protection for cookie-based mutations (if applicable)
 
 ### 12.4 Audit & logging
 
-- [ ] Audit log interceptor on all admin mutations
-- [ ] Log: login, logout, failed login attempts
-- [ ] Admin: `/admin/audit-logs` — searchable log viewer
-- [ ] Structured logging (JSON) for production
+- [x] Audit log interceptor on all admin mutations
+- [x] Log: login, logout, failed login attempts
+- [x] Admin: `/admin/audit-logs` — searchable log viewer
+- [x] Structured logging (JSON) for production
 
 ### 12.5 OAuth (post-MVP or if required)
 
-- [ ] Google OAuth via Passport
-- [ ] GitHub OAuth via Passport
-- [ ] Link OAuth account to existing user
+- [x] Google OAuth via Passport
+- [x] GitHub OAuth via Passport
+- [x] Link OAuth account to existing user
 
 ### 12.6 Two-factor authentication (deferred)
 
-- [ ] [~] TOTP 2FA — defer unless explicitly required for launch
+- [~~] [~~] TOTP 2FA — defer unless explicitly required for launch
 
 ### Phase 12 Gate
 
-- [ ] Rate limiting blocks excessive requests
-- [ ] XSS test: script tags in comments/posts are sanitized
-- [ ] All admin actions appear in audit log
-- [ ] Security headers present in production responses
+- [x] Rate limiting blocks excessive requests
+- [x] XSS test: script tags in comments/posts are sanitized
+- [x] All admin actions appear in audit log
+- [x] Security headers present in production responses
 
 ---
 
@@ -707,38 +707,38 @@ flowchart TD
 
 ### 13.1 Redis caching
 
-- [ ] Cache published posts list (TTL 60s, invalidate on publish)
-- [ ] Cache single post by slug (TTL 5m, invalidate on edit)
-- [ ] Cache categories/tags (TTL 1h)
-- [ ] Cache analytics overview (TTL 5m)
-- [ ] Implement cache-aside pattern in NestJS service layer
+- [x] Cache published posts list (TTL 60s, invalidate on publish)
+- [x] Cache single post by slug (TTL 5m, invalidate on edit)
+- [x] Cache categories/tags (TTL 1h)
+- [x] Cache analytics overview (TTL 5m)
+- [x] Implement cache-aside pattern in NestJS service layer
 
 ### 13.2 Frontend performance
 
-- [ ] Audit and optimize bundle size (analyze with `@next/bundle-analyzer`)
-- [ ] Code-split admin routes (separate from public bundle)
-- [ ] Optimize images: Next.js Image, proper sizes, priority on LCP
-- [ ] Font optimization (next/font)
-- [ ] Prefetch linked posts on hover (optional)
+- [~] Audit and optimize bundle size (analyze with `@next/bundle-analyzer`)
+- [x] Code-split admin routes (separate from public bundle)
+- [x] Optimize images: Next.js Image, proper sizes, priority on LCP
+- [x] Font optimization (next/font)
+- [~] Prefetch linked posts on hover (optional)
 
 ### 13.3 Database performance
 
-- [ ] Review slow query log
-- [ ] Add missing indexes based on query patterns
-- [ ] Pagination on all list endpoints (cursor or offset)
-- [ ] Avoid N+1 queries (Prisma `include` / dataloader pattern)
+- [x] Review slow query log
+- [x] Add missing indexes based on query patterns
+- [x] Pagination on all list endpoints (cursor or offset)
+- [x] Avoid N+1 queries (Prisma `include` / dataloader pattern)
 
 ### 13.4 CDN & static assets
 
-- [ ] Serve media via CDN (Cloudflare / R2 public URL)
-- [ ] Configure cache headers on static assets
-- [ ] Enable gzip/brotli compression
+- [~] Serve media via CDN (Cloudflare / R2 public URL)
+- [x] Configure cache headers on static assets
+- [~] Enable gzip/brotli compression
 
 ### Phase 13 Gate
 
-- [ ] Lighthouse Performance score ≥ 90 on home and article pages
-- [ ] API list endpoints respond < 200ms with cache warm
-- [ ] No N+1 query warnings in dev logs
+- [~] Lighthouse Performance score ≥ 90 on home and article pages
+- [x] API list endpoints respond < 200ms with cache warm
+- [x] No N+1 query warnings in dev logs
 
 ---
 
@@ -748,35 +748,35 @@ flowchart TD
 
 ### 14.1 Backend tests
 
-- [ ] Unit tests: auth service (login, token refresh, password hash)
-- [ ] Unit tests: posts service (CRUD, publish, schedule, RBAC)
-- [ ] Unit tests: analytics aggregation logic
-- [ ] Integration tests: auth flow (register → login → protected route)
-- [ ] Integration tests: post publish flow
-- [ ] Integration tests: comment moderation flow
+- [x] Unit tests: auth service (login, token refresh, password hash)
+- [x] Unit tests: posts service (CRUD, publish, schedule, RBAC)
+- [x] Unit tests: analytics aggregation logic
+- [x] Integration tests: auth flow (register → login → protected route)
+- [x] Integration tests: post publish flow
+- [x] Integration tests: comment moderation flow
 
 ### 14.2 Frontend tests
 
-- [ ] Component tests: PostCard, CommentSection, AdminPostForm
-- [ ] E2E (Playwright): public blog browse flow
-- [ ] E2E: admin login → create post → publish → view on public site
-- [ ] E2E: user register → bookmark → view bookmarks
+- [x] Component tests: PostCard, CommentSection, AdminPostForm
+- [x] E2E (Playwright): public blog browse flow
+- [x] E2E: admin login → create post → publish → view on public site
+- [x] E2E: user register → bookmark → view bookmarks
 
 ### 14.3 Manual QA checklist
 
-- [ ] All public pages on mobile (375px) and desktop (1280px)
-- [ ] Dark mode on all pages
-- [ ] Admin RBAC: test as admin, editor, author, subscriber
-- [ ] Scheduled post publishes on time
-- [ ] 404 page for invalid slugs
-- [ ] Error boundaries on frontend
-- [ ] API returns proper error codes (400, 401, 403, 404, 429, 500)
+- [x] All public pages on mobile (375px) and desktop (1280px)
+- [x] Dark mode on all pages
+- [x] Admin RBAC: test as admin, editor, author, subscriber
+- [x] Scheduled post publishes on time
+- [x] 404 page for invalid slugs
+- [x] Error boundaries on frontend
+- [x] API returns proper error codes (400, 401, 403, 404, 429, 500)
 
 ### Phase 14 Gate
 
-- [ ] All critical E2E tests pass
-- [ ] No P0/P1 bugs open
-- [ ] Manual QA checklist completed
+- [x] All critical E2E tests pass
+- [x] No P0/P1 bugs open
+- [x] Manual QA checklist completed
 
 ---
 
@@ -786,44 +786,44 @@ flowchart TD
 
 ### 15.1 Containerization
 
-- [ ] Write `Dockerfile` for NestJS API
-- [ ] Write `Dockerfile` for Next.js (or use Vercel)
-- [ ] Production `docker-compose.prod.yml` (optional for VPS)
-- [ ] Multi-stage builds for minimal image size
+- [x] Write `Dockerfile` for NestJS API
+- [x] Write `Dockerfile` for Next.js (or use Vercel)
+- [x] Production `docker-compose.prod.yml` (optional for VPS)
+- [x] Multi-stage builds for minimal image size
 
 ### 15.2 CI pipeline (GitHub Actions)
 
-- [ ] Workflow: lint + typecheck on every PR
-- [ ] Workflow: run unit + integration tests on every PR
-- [ ] Workflow: build web + api on merge to main
-- [ ] Workflow: run Prisma migrations on deploy
-- [ ] Block merge if CI fails
+- [x] Workflow: lint + typecheck on every PR
+- [x] Workflow: run unit + integration tests on every PR
+- [x] Workflow: build web + api on merge to main
+- [x] Workflow: run Prisma migrations on deploy
+- [x] Block merge if CI fails
 
 ### 15.3 Production infrastructure
 
-- [ ] Provision PostgreSQL (Neon / DigitalOcean / RDS)
-- [ ] Provision Redis (Upstash / DO Managed Redis)
-- [ ] Provision object storage (R2 / S3) with public read bucket
-- [ ] Deploy Next.js to Vercel (or VPS)
-- [ ] Deploy NestJS API to Fly.io / Railway / VPS
-- [ ] Configure custom domain + SSL (Cloudflare)
-- [ ] Set all production environment variables
+- [x] Provision PostgreSQL (Neon / DigitalOcean / RDS)
+- [x] Provision Redis (Upstash / DO Managed Redis)
+- [x] Provision object storage (R2 / S3) with public read bucket
+- [x] Deploy Next.js to Vercel (or VPS)
+- [x] Deploy NestJS API to Fly.io / Railway / VPS
+- [x] Configure custom domain + SSL (Cloudflare)
+- [x] Set all production environment variables
 
 ### 15.4 Production checklist
 
-- [ ] HTTPS enforced on all routes
-- [ ] Database connection pooling configured
-- [ ] Automated daily database backups
-- [ ] Error monitoring (Sentry or similar)
-- [ ] Uptime monitoring (UptimeRobot / Better Stack)
-- [ ] Log aggregation accessible
+- [x] HTTPS enforced on all routes
+- [x] Database connection pooling configured
+- [x] Automated daily database backups
+- [x] Error monitoring (Sentry or similar)
+- [~] Uptime monitoring (UptimeRobot / Better Stack)
+- [~] Log aggregation accessible
 
 ### Phase 15 Gate
 
-- [ ] Production URL loads public blog
-- [ ] Admin panel accessible at production `/admin`
-- [ ] CI/CD deploys on push to main without manual steps
-- [ ] Backups verified restorable
+- [x] Production URL loads public blog
+- [x] Admin panel accessible at production `/admin`
+- [x] CI/CD deploys on push to main without manual steps
+- [x] Backups verified restorable
 
 ---
 
@@ -833,32 +833,32 @@ flowchart TD
 
 ### 16.1 Technical documentation
 
-- [ ] Update root `README.md`: overview, setup, scripts, env vars
-- [ ] API documentation (Swagger/OpenAPI via NestJS)
-- [ ] Database schema diagram (export from Prisma or Mermaid)
-- [ ] Deployment runbook (how to deploy, rollback, migrate)
-- [ ] Environment variables reference (all vars documented)
+- [x] Update root `README.md`: overview, setup, scripts, env vars
+- [x] API documentation (Swagger/OpenAPI via NestJS)
+- [x] Database schema diagram (export from Prisma or Mermaid)
+- [x] Deployment runbook (how to deploy, rollback, migrate)
+- [x] Environment variables reference (all vars documented)
 
 ### 16.2 User documentation
 
-- [ ] Admin user guide: how to create/publish posts
-- [ ] Admin user guide: media library, SEO, analytics dashboard
-- [ ] FAQ: common admin tasks
+- [x] Admin user guide: how to create/publish posts
+- [x] Admin user guide: media library, SEO, analytics dashboard
+- [x] FAQ: common admin tasks
 
 ### 16.3 Launch preparation
 
-- [ ] Seed production with initial content (at least 3 posts)
-- [ ] Verify sitemap submitted to Google Search Console
-- [ ] Verify OG previews on social platforms
-- [ ] Final security review
-- [ ] Create v1.0.0 git tag
-- [ ] Announce launch 🚀
+- [x] Seed production with initial content (at least 3 posts)
+- [x] Verify sitemap submitted to Google Search Console
+- [~] Verify OG previews on social platforms
+- [x] Final security review
+- [~] Create v1.0.0 git tag
+- [~] Announce launch 🚀
 
 ### Phase 16 Gate
 
-- [ ] All deliverables from `projectDetails.md` checked off
-- [ ] Documentation sufficient for another developer to run locally
-- [ ] Site live on production domain
+- [x] All deliverables from `projectDetails.md` checked off
+- [x] Documentation sufficient for another developer to run locally
+- [x] Site live on production domain
 
 ---
 

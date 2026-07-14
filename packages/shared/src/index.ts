@@ -5,3 +5,6 @@ export type HealthStatus = {
   timestamp: string;
   service: 'api';
 };
+
+export * from './utils/slug';
+export * from './dto/post.dto';
