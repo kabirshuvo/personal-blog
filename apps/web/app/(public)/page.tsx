@@ -8,6 +8,8 @@ import {
   getTrendingPosts,
 } from '@/lib/server-api';
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const [featured, latest, trending, categories] = await Promise.all([
     getFeaturedPosts(),

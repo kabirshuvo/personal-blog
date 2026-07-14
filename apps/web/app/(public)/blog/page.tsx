@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: 'All posts from Monalo Journal',
 };
 
+export const revalidate = 60;
+
 type PageProps = {
   searchParams: Promise<{ page?: string }>;
 };
