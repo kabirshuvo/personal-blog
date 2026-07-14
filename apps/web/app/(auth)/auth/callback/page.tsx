@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { setAccessToken, apiFetch } from '@/lib/api';
 import type { User } from '@/lib/types';
 
-export default function AuthCallbackPage() {
+function AuthCallbackInner() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +19,6 @@ export default function AuthCallbackPage() {
     setAccessToken(token);
     void apiFetch<User>('/auth/me')
       .then(() => {
-        // Full navigation so AuthProvider remounts with the new token
         window.location.assign('/admin');
       })
       .catch(() => {
@@ -28,17 +27,25 @@ export default function AuthCallbackPage() {
   }, [searchParams]);
 
   return (
+    <section>
+      <h1 className="text-2xl font-semibold">Completing sign-in…</h1>
+      {error ? (
+        <p className="mt-3 text-red-600">{error}</p>
+      ) : (
+        <p className="mt-3 text-stone-600">
+          Please wait while we finish Google/GitHub login.
+        </p>
+      )}
+    </section>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
     <main className="mx-auto flex min-h-screen max-w-md items-center px-6">
-      <section>
-        <h1 className="text-2xl font-semibold">Completing sign-in…</h1>
-        {error ? (
-          <p className="mt-3 text-red-600">{error}</p>
-        ) : (
-          <p className="mt-3 text-stone-600">
-            Please wait while we finish Google/GitHub login.
-          </p>
-        )}
-      </section>
+      <Suspense fallback={<p className="text-stone-600">Completing sign-in…</p>}>
+        <AuthCallbackInner />
+      </Suspense>
     </main>
   );
 }
